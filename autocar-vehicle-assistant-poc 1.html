@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vehicle Problem Assistant | Autocar Repairs, West Dulwich</title>
+<meta name="description" content="Describe what your car is doing and get general guidance on likely causes, how urgent it is, and the right next step from Autocar Repairs, West Dulwich SE21.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1B2E52; --blue:#2F4A7C; --steel:#66789C; --mist:#EEF1F6; --line:#D5DBE6;
+  --paper:#FFFFFF; --ink:#16233D; --muted:#56637D; --plate:#F7CA18;
+  --red:#B42318; --red-bg:#FDECEA; --amber:#8A5100; --amber-bg:#FFF3DA; --green:#1E6B45; --green-bg:#E6F3EB;
+  --display:"Barlow Condensed","Arial Narrow","Roboto Condensed",Arial,sans-serif;
+  --body:"Barlow","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:var(--body);font-size:16px;line-height:1.5;color:var(--ink);background:var(--mist)}
+a{color:var(--blue)}
+button,input,select,textarea{font:inherit}
+:focus-visible{outline:3px solid var(--plate);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+/* Top bar */
+.topbar{background:var(--navy);color:#C9D3E6;font-size:14px}
+.topbar .wrap{display:flex;gap:20px;align-items:center;justify-content:space-between;min-height:38px;flex-wrap:wrap}
+.topbar a{color:#fff;text-decoration:none;font-weight:600}
+.status{display:inline-flex;align-items:center;gap:8px}
+.status i{width:8px;height:8px;border-radius:50%;background:#7C8BA8;display:inline-block}
+.status.open i{background:#4CC38A}
+.phones{display:flex;gap:18px}
+
+/* Header */
+header.site{background:var(--paper);border-bottom:1px solid var(--line)}
+header.site .wrap{display:flex;align-items:center;gap:24px;min-height:84px}
+.logo img{height:64px;width:auto;display:block}
+nav.main{display:flex;gap:22px;margin-left:auto}
+nav.main a{color:var(--ink);text-decoration:none;font-weight:500}
+nav.main a:hover{color:var(--blue);text-decoration:underline}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:2px solid var(--blue);background:var(--blue);color:#fff;
+  font-weight:600;padding:10px 18px;border-radius:6px;text-decoration:none;cursor:pointer;line-height:1.2}
+.btn:hover{background:var(--navy);border-color:var(--navy)}
+.btn.ghost{background:transparent;color:var(--blue)}
+.btn.ghost:hover{background:var(--mist);color:var(--navy)}
+.btn.small{padding:7px 12px;font-size:15px}
+
+/* Hero */
+.hero{background:var(--navy);color:#fff;padding:40px 0 116px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-60px;top:-40px;width:420px;height:420px;
+  clip-path:polygon(25% 0,75% 0,100% 30%,100% 70%,75% 100%,25% 100%,0 70%,0 30%);
+  border:0;background:linear-gradient(135deg,rgba(102,120,156,.35),rgba(102,120,156,0));}
+.hero h1{font-family:var(--display);font-weight:700;font-size:clamp(42px,6vw,68px);line-height:.95;margin:0 0 14px;text-transform:uppercase;letter-spacing:.01em;max-width:18ch}
+.hero p{font-size:19px;color:#C9D3E6;max-width:56ch;margin:0}
+
+/* Workspace */
+.workspace{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:24px;margin-top:-84px;position:relative;z-index:1;padding-bottom:48px}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:10px}
+.chat{display:flex;flex-direction:column;min-height:620px;box-shadow:0 18px 40px -24px rgba(27,46,82,.55)}
+.chat-head{display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid var(--line)}
+.badge{width:42px;height:42px;flex:none;background:var(--blue);color:#fff;display:grid;place-items:center;
+  clip-path:polygon(25% 0,75% 0,100% 30%,100% 70%,75% 100%,25% 100%,0 70%,0 30%)}
+.chat-head h2{font-family:var(--display);font-size:24px;margin:0;line-height:1.1;font-weight:700}
+.chat-head p{margin:0;color:var(--muted);font-size:14px}
+.chat-head .restart{margin-left:auto}
+.log{position:relative;flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;max-height:68vh;min-height:420px;scroll-behavior:smooth}
+.log>*{flex-shrink:0}
+.msg{max-width:88%;padding:12px 16px;border-radius:12px;animation:pop .22s ease-out}
+.msg p{margin:0 0 8px}.msg p:last-child{margin:0}
+.msg.bot{background:var(--mist);border-top-left-radius:3px;align-self:flex-start}
+.msg.user{background:var(--blue);color:#fff;border-top-right-radius:3px;align-self:flex-end}
+.msg.wide{max-width:100%;width:100%;background:var(--paper);border:1px solid var(--line);padding:0;overflow:hidden}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.typing{display:inline-flex;gap:4px;padding:14px 16px}
+.typing span{width:7px;height:7px;border-radius:50%;background:var(--steel);animation:blink 1s infinite}
+.typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
+@keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+
+.choices{display:flex;flex-wrap:wrap;gap:8px;align-self:stretch}
+.choice{border:1.5px solid var(--line);background:var(--paper);color:var(--ink);padding:9px 14px;border-radius:999px;cursor:pointer;text-align:left;font-weight:500}
+.choice:hover{border-color:var(--blue);color:var(--blue)}
+.cats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-self:stretch}
+.cat{display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);background:var(--paper);border-radius:8px;padding:12px;cursor:pointer;text-align:left;color:var(--ink);font-weight:600}
+.cat svg{width:26px;height:26px;flex:none;stroke:var(--blue);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.cat:hover{border-color:var(--blue);background:#F7F9FC}
+.cat small{display:block;font-weight:400;color:var(--muted);font-size:13px;line-height:1.3}
+
+/* Result */
+.urg{padding:14px 18px;display:flex;gap:12px;align-items:flex-start}
+.urg .dot{width:14px;height:14px;border-radius:50%;margin-top:5px;flex:none}
+.urg strong{font-family:var(--display);font-size:24px;line-height:1.1;display:block;font-weight:700}
+.urg span{font-size:15px}
+.urg.red{background:var(--red-bg);color:var(--red)}.urg.red .dot{background:var(--red)}
+.urg.amber{background:var(--amber-bg);color:var(--amber)}.urg.amber .dot{background:#D98A00}
+.urg.green{background:var(--green-bg);color:var(--green)}.urg.green .dot{background:var(--green)}
+.res-body{padding:16px 18px 18px}
+.res-body h3{font-family:var(--display);font-size:26px;margin:0 0 6px;line-height:1.1}
+.res-body h4{font-size:15px;margin:16px 0 6px;color:var(--navy)}
+.res-body ul{margin:0;padding-left:20px}
+.res-body li{margin:3px 0}
+.note{background:var(--mist);border-left:4px solid var(--blue);padding:10px 12px;margin-top:14px;font-size:15px}
+.svc{display:flex;gap:12px;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-top:6px;flex-wrap:wrap}
+.svc b{display:block}
+.svc span{color:var(--muted);font-size:14px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.disclaimer{font-size:13px;color:var(--muted);margin-top:14px}
+
+.safety{border:2px solid var(--red);background:var(--red-bg);color:#5C120C}
+.safety h3{color:var(--red)}
+.safety ol{margin:6px 0 0;padding-left:22px}
+
+/* Composer */
+.composer{display:flex;gap:10px;padding:14px 16px;border-top:1px solid var(--line);background:#FAFBFD;border-radius:0 0 10px 10px}
+.composer input{flex:1;min-width:0;border:1.5px solid var(--line);border-radius:6px;padding:11px 14px;background:#fff}
+.composer input:focus{border-color:var(--blue);outline:none;box-shadow:0 0 0 3px rgba(47,74,124,.18)}
+
+/* Aside */
+aside{display:flex;flex-direction:column;gap:16px}
+aside .panel{padding:18px}
+aside h2{font-family:var(--display);font-size:22px;margin:0 0 10px;line-height:1.1}
+.case dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:15px}
+.case dt{color:var(--muted)}
+.case dd{margin:0;font-weight:600}
+.case .empty{color:var(--muted);margin:0;font-size:15px}
+.pill{display:inline-block;padding:1px 9px;border-radius:999px;font-size:13px;font-weight:600}
+.pill.red{background:var(--red-bg);color:var(--red)}.pill.amber{background:var(--amber-bg);color:var(--amber)}.pill.green{background:var(--green-bg);color:var(--green)}
+.garage p{margin:0 0 8px;font-size:15px}
+.hours{width:100%;border-collapse:collapse;font-size:15px;margin:6px 0 12px}
+.hours td{padding:3px 0;border-bottom:1px dashed var(--line)}
+.hours td:last-child{text-align:right}
+.hours tr.today td{font-weight:700;color:var(--navy)}
+.emerg{background:var(--navy);color:#DCE3F0;border:0}
+.emerg h2{color:#fff}
+.emerg p{margin:0 0 8px;font-size:15px}
+.emerg strong{color:#fff}
+
+footer{background:var(--navy);color:#AEB9CF;font-size:14px;padding:22px 0}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer a{color:#fff}
+
+/* Modal */
+dialog{border:0;border-radius:12px;padding:0;max-width:560px;width:calc(100% - 32px);color:var(--ink)}
+dialog::backdrop{background:rgba(16,28,52,.6)}
+.modal-head{background:var(--navy);color:#fff;padding:18px 22px;display:flex;align-items:center;justify-content:space-between}
+.modal-head h2{font-family:var(--display);margin:0;font-size:28px}
+.modal-head button{background:none;border:0;color:#fff;font-size:28px;line-height:1;cursor:pointer;padding:0 4px}
+.modal-body{padding:20px 22px 22px}
+.field{margin-bottom:14px}
+.field label{display:block;font-weight:600;margin-bottom:5px;font-size:15px}
+.field input,.field select,.field textarea{width:100%;border:1.5px solid var(--line);border-radius:6px;padding:10px 12px;background:#fff}
+.field textarea{min-height:90px;resize:vertical}
+.field .hint{font-size:13px;color:var(--muted);margin-top:4px}
+.field .err{font-size:13px;color:var(--red);margin-top:4px;display:none}
+.field.invalid .err{display:block}
+.field.invalid input,.field.invalid select{border-color:var(--red)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.plate{font-family:"Charles Wright","UKNumberPlate",var(--display);font-weight:700;font-size:28px!important;letter-spacing:.08em;text-transform:uppercase;
+  background:var(--plate)!important;border:2px solid #1a1a1a!important;border-radius:6px;text-align:center;padding:6px 10px 6px 46px!important;
+  background-image:linear-gradient(90deg,#003399 0,#003399 36px,transparent 36px)!important;color:#111}
+.plate-wrap{position:relative}
+.plate-wrap span{position:absolute;left:0;top:0;bottom:0;width:36px;display:grid;place-items:end center;padding-bottom:7px;color:#fff;font-weight:700;font-size:13px;pointer-events:none}
+.done{text-align:center;padding:10px 0}
+.done .tick{width:64px;height:64px;border-radius:50%;background:var(--green-bg);color:var(--green);display:grid;place-items:center;margin:0 auto 12px;font-size:32px}
+.done h3{font-family:var(--display);font-size:30px;margin:0 0 6px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:6px;font-size:15px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:10}
+.toast.show{opacity:1}
+.poc{display:inline-block;background:rgba(255,255,255,.12);color:#fff;border-radius:4px;padding:2px 8px;font-size:13px;margin-bottom:16px}
+
+@media (max-width:960px){
+  .workspace{grid-template-columns:1fr}
+  nav.main{display:none}
+  .cats{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:560px){
+  .topbar .phones a+a{display:none}
+  header.site .wrap{min-height:70px}
+  .logo img{height:50px}
+  header.site .btn{padding:8px 12px;font-size:15px}
+  .hero{padding:36px 0 100px}
+  .cats{grid-template-columns:1fr}
+  .msg{max-width:95%}
+  .row2{grid-template-columns:1fr}
+  .chat-head p{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <span class="status" id="status"><i></i><span id="statusText">Checking opening hours</span></span>
+    <span class="phones"><a href="tel:+442087615226">020 8761 5226</a><a href="tel:+442087612282">020 8761 2282</a></span>
+  </div>
+</div>
+
+<header class="site">
+  <div class="wrap">
+    <a class="logo" href="https://www.autocar-repairs.co.uk/" aria-label="Autocar Repairs home"><img src="data:image/png;base64,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" alt="Autocar Repairs, established 1974"></a>
+    <nav class="main" aria-label="Main">
+      <a href="https://www.autocar-repairs.co.uk/services">Services</a>
+      <a href="https://www.autocar-repairs.co.uk/mot">MOT</a>
+      <a href="https://www.autocar-repairs.co.uk/diagnostics">Diagnostics</a>
+      <a href="https://www.autocar-repairs.co.uk/pricing">Pricing</a>
+      <a href="https://www.autocar-repairs.co.uk/contact-us">Contact</a>
+    </nav>
+    <button class="btn" type="button" data-book>Request a booking</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <span class="poc">Proof of concept</span>
+    <h1>What's your car doing?</h1>
+    <p>Describe the problem and get general guidance on the likely cause, how urgent it is, and the right next step. Our West Dulwich team has been looking after cars since 1974.</p>
+  </div>
+</section>
+
+<main class="wrap workspace">
+  <section class="panel chat" aria-label="Vehicle problem assistant">
+    <div class="chat-head">
+      <div class="badge" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg></div>
+      <div>
+        <h2>Vehicle problem assistant</h2>
+        <p>General guidance only. A technician confirms every diagnosis.</p>
+      </div>
+      <button class="btn ghost small restart" type="button" id="restart">Start again</button>
+    </div>
+    <div class="log" id="log" role="log" aria-live="polite"></div>
+    <form class="composer" id="composer" autocomplete="off">
+      <label for="text" class="sr" style="position:absolute;left:-9999px">Describe the problem</label>
+      <input id="text" type="text" placeholder="e.g. grinding noise when I brake" maxlength="300">
+      <button class="btn" type="submit">Send</button>
+    </form>
+  </section>
+
+  <aside>
+    <section class="panel case" aria-labelledby="caseTitle">
+      <h2 id="caseTitle">Your summary</h2>
+      <div id="caseBody"><p class="empty">Your answers will appear here so you can share them with us when you book or call.</p></div>
+    </section>
+
+    <section class="panel garage" aria-labelledby="garageTitle">
+      <h2 id="garageTitle">Autocar Repairs</h2>
+      <p>71 Rosendale Road, West Dulwich, London SE21 8EZ</p>
+      <table class="hours" aria-label="Opening hours">
+        <tbody id="hours">
+          <tr data-d="1,2,3,4,5"><td>Monday to Friday</td><td>8:30am to 6:30pm</td></tr>
+          <tr data-d="6"><td>Saturday</td><td>9:00am to 1:00pm</td></tr>
+          <tr data-d="0"><td>Sunday</td><td>Closed</td></tr>
+        </tbody>
+      </table>
+      <p><a href="tel:+442087615226"><strong>020 8761 5226</strong></a> or <a href="tel:+442087612282">020 8761 2282</a><br>
+      <a href="mailto:enquiries@autocar-repairs.co.uk">enquiries@autocar-repairs.co.uk</a></p>
+    </section>
+
+    <section class="panel emerg" aria-labelledby="emergTitle">
+      <h2 id="emergTitle">Broken down or feel unsafe?</h2>
+      <p>Pull over somewhere safe, switch on your hazard lights and get everyone out on the side away from traffic.</p>
+      <p>Call your breakdown provider. If anyone is in danger, call <strong>999</strong>.</p>
+    </section>
+  </aside>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>&copy; <span id="yr"></span> West Dulwich Service Station Ltd, trading as Autocar Repairs. Registered in England &amp; Wales, No. 02096872.</span>
+    <span>Proof of concept. Guidance is general and is not a diagnosis.</span>
+  </div>
+</footer>
+
+<dialog id="book" aria-labelledby="bookTitle">
+  <div class="modal-head"><h2 id="bookTitle">Request a booking</h2><button type="button" id="closeBook" aria-label="Close">&times;</button></div>
+  <div class="modal-body" id="bookBody">
+    <form id="bookForm" novalidate>
+      <div class="field" id="f-reg">
+        <label for="reg">Registration number</label>
+        <div class="plate-wrap"><span aria-hidden="true">UK</span><input id="reg" class="plate" maxlength="8" placeholder="AB12 CDE" autocomplete="off"></div>
+        <div class="err">Enter a UK registration, for example AB12 CDE.</div>
+      </div>
+      <div class="row2">
+        <div class="field" id="f-name"><label for="name">Your name</label><input id="name" autocomplete="name"><div class="err">Enter your name.</div></div>
+        <div class="field" id="f-phone"><label for="phone">Phone</label><input id="phone" type="tel" autocomplete="tel" placeholder="07..."><div class="err">Enter a UK phone number.</div></div>
+      </div>
+      <div class="field"><label for="email">Email (optional)</label><input id="email" type="email" autocomplete="email"></div>
+      <div class="row2">
+        <div class="field" id="f-service"><label for="service">Service</label>
+          <select id="service">
+            <option value="Diagnostic testing">Diagnostic testing</option>
+            <option value="Repair (brakes, exhausts, suspension, clutch)">Repair</option>
+            <option value="Full service">Full service</option>
+            <option value="MOT test">MOT test</option>
+            <option value="Air conditioning">Air conditioning</option>
+            <option value="Tyres">Tyres</option>
+            <option value="Vehicle inspection">Vehicle inspection</option>
+          </select>
+        </div>
+        <div class="field" id="f-date"><label for="date">Preferred date</label><input id="date" type="date"><div class="err" id="dateErr">Choose a date from tomorrow, Monday to Saturday.</div></div>
+      </div>
+      <div class="field"><label for="notes">What's happening</label><textarea id="notes"></textarea><div class="hint">We've filled this in from your answers. Edit it as you like.</div></div>
+      <button class="btn" type="submit" style="width:100%">Send booking request</button>
+      <p class="disclaimer">We'll call you to confirm a time. Requests are only confirmed once we've spoken to you.</p>
+    </form>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+const PHONE = "020 8761 5226", TEL = "tel:+442087615226";
+const SITE = "https://www.autocar-repairs.co.uk";
+const SERVICES = {
+  diagnostics:{name:"Diagnostic testing", desc:"Electronic diagnostics for engine, transmission and ABS systems", url:SITE+"/diagnostics", book:"Diagnostic testing"},
+  repair:{name:"Repairs", desc:"Brakes, exhausts, suspension, clutches and auto electrical", url:SITE+"/services", book:"Repair (brakes, exhausts, suspension, clutch)"},
+  servicing:{name:"Full service", desc:"Servicing to manufacturer schedules, protecting your warranty", url:SITE+"/services", book:"Full service"},
+  mot:{name:"MOT test", desc:"MOT arranged, with any repairs quoted before work starts", url:SITE+"/mot", book:"MOT test"},
+  aircon:{name:"Air conditioning", desc:"Re-gas, leak testing and antibacterial cleaning", url:SITE+"/airconditioning", book:"Air conditioning"},
+  tyres:{name:"Tyres", desc:"Michelin, Pirelli, Bridgestone, Goodyear, Dunlop, Continental and classic tyres", url:SITE+"/services", book:"Tyres"},
+  inspection:{name:"Vehicle inspection", desc:"A thorough check before you buy, sell or travel", url:SITE+"/services", book:"Vehicle inspection"}
+};
+const URG = {
+  red:{label:"Stop driving", text:"Pull over when it's safe and switch off the engine. Don't drive on. Call us and we'll advise on getting the car to us."},
+  amber:{label:"Get it checked soon", text:"Usually OK to drive carefully for short distances. Book in within the next few days."},
+  green:{label:"Book when convenient", text:"Not usually urgent. Book in at a time that suits you."}
+};
+const ICON = {
+  warning:'<path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17v.5"/>',
+  brakes:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="2.5"/><path d="M5.5 6.5A9 9 0 0 1 9 4"/>',
+  noise:'<path d="M4 10v4h4l5 4V6L8 10H4z"/><path d="M16 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12"/>',
+  start:'<circle cx="8" cy="12" r="4"/><path d="M12 12h9M18 12v3M21 12v2"/>',
+  smoke:'<path d="M8 21c-2-2 2-4 0-6s2-4 0-6 2-4 0-6M15 21c-2-2 2-4 0-6s2-4 0-6"/>',
+  aircon:'<path d="M12 2v20M3.5 7l17 10M20.5 7l-17 10"/>',
+  tyres:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v5M12 16v5M3 12h5M16 12h5"/>',
+  gears:'<circle cx="6" cy="5" r="1.5"/><circle cx="12" cy="5" r="1.5"/><circle cx="18" cy="5" r="1.5"/><path d="M6 6.5V19M12 6.5V19M18 6.5V12H6"/>',
+  mot:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 13l2 2 4-4"/>'
+};
+
+/* Knowledge base: general guidance written for UK drivers */
+const KB = {
+ warning:{label:"Warning light", hint:"Something lit up on the dashboard", q:"Which warning light has come on? Pick the closest match.", opts:[
+  {id:"engine",label:"Engine light, steady amber",u:"amber",title:"Engine management light",
+   sum:"A steady amber engine light means the engine's computer has stored a fault code. The car is usually safe to drive gently, but the code needs reading to find the cause.",
+   causes:["A faulty sensor, such as an oxygen or airflow sensor","Spark plug or ignition coil wear","Exhaust or emissions system fault","A loose fuel filler cap"],
+   checks:["Make sure the fuel cap is closed tightly","Notice whether the car feels down on power or runs unevenly","Avoid hard acceleration and long trips until it's checked"],svc:"diagnostics"},
+  {id:"engineflash",label:"Engine light, flashing",u:"red",title:"Flashing engine light",
+   sum:"A flashing engine light usually means the engine is misfiring badly. Driving on can overheat and damage the catalytic converter, which is expensive to replace.",
+   causes:["Severe misfire from a failed ignition coil or spark plug","Faulty fuel injector","Low compression in a cylinder"],
+   checks:["Ease off and pull over when it's safe","Don't drive any further than you need to"],svc:"diagnostics"},
+  {id:"oil",label:"Oil pressure (red oil can)",u:"red",title:"Oil pressure warning",
+   sum:"The red oil light means oil pressure has dropped. Without oil pressure an engine can be seriously damaged within minutes.",
+   causes:["Very low oil level from a leak or oil burning","Oil pump or pressure sensor fault","Blocked oil pickup"],
+   checks:["Stop and switch off as soon as it's safe","Once the engine has cooled for 10 minutes, check the dipstick on level ground","If the level is fine, don't restart. Call us"],svc:"diagnostics"},
+  {id:"battery",label:"Battery or charging (red)",u:"amber",title:"Charging system warning",
+   sum:"This light means the battery isn't being charged, so the car is running on battery power alone. It will keep going for a limited time before it cuts out.",
+   causes:["Failed alternator","Broken or slipping auxiliary drive belt","Loose or corroded battery connections"],
+   checks:["Turn off non-essential electrics such as heated screens and the radio","Drive straight to us or home, and avoid switching the engine off on the way"],
+   note:"If the light comes on with a squeal or the steering goes heavy, the drive belt may have snapped. Pull over and call us.",svc:"diagnostics"},
+  {id:"temp",label:"Engine temperature (red)",u:"red",title:"Engine overheating",
+   sum:"A red temperature light means the engine is too hot. Driving on risks a blown head gasket or a warped cylinder head.",
+   causes:["Low coolant from a leak","Cooling fan or thermostat failure","Water pump fault"],
+   checks:["Pull over and switch off when it's safe","Never open the coolant cap while the engine is hot. It can spray scalding liquid","Once cool, check the coolant level against the marks on the expansion tank"],svc:"diagnostics"},
+  {id:"brake",label:"Brake warning (red)",u:"red",title:"Brake system warning",
+   sum:"The red brake light can simply mean the handbrake is on. If it stays lit once the handbrake is released, the brake fluid may be low or there's a fault in the braking system.",
+   causes:["Handbrake not fully released","Low brake fluid from worn pads or a leak","Brake system fault"],
+   checks:["Make sure the handbrake is fully off","If the light stays on, don't drive the car. Call us"],svc:"repair"},
+  {id:"abs",label:"ABS (amber)",u:"amber",title:"ABS warning light",
+   sum:"Your normal brakes should still work, but the anti-lock system may not, so wheels could lock under heavy braking, especially in the wet.",
+   causes:["Faulty wheel speed sensor","Damaged sensor wiring","ABS pump or module fault"],
+   checks:["Leave extra stopping distance","Avoid harsh braking until it's checked"],svc:"diagnostics"},
+  {id:"tpms",label:"Tyre pressure",u:"amber",title:"Tyre pressure warning",
+   sum:"One or more tyres is below its set pressure. Under-inflated tyres affect grip, braking and fuel economy.",
+   causes:["A slow puncture","Normal pressure loss, especially in cold weather","Faulty tyre pressure sensor"],
+   checks:["Check pressures against the label in the driver's door frame or fuel flap","Look for nails, cuts or bulges","Reset the system after inflating, as shown in your handbook"],svc:"tyres"},
+  {id:"airbag",label:"Airbag (SRS)",u:"amber",title:"Airbag warning light",
+   sum:"The airbags may not deploy in a crash while this light is on. It's also an MOT failure.",
+   causes:["Seat or seatbelt connector fault, often under the front seats","Clock spring fault in the steering wheel","Crash sensor fault"],
+   checks:["Don't try to repair airbag wiring yourself","Book a diagnostic check"],svc:"diagnostics"},
+  {id:"dpf",label:"DPF or glow plug (diesel)",u:"amber",title:"Diesel particulate filter or glow plug light",
+   sum:"A DPF light usually means the filter is clogging, often from lots of short trips. A flashing glow plug light usually points to an engine fault.",
+   causes:["DPF unable to clean itself on short journeys","Faulty sensor or EGR valve","Glow plug or engine management fault"],
+   checks:["If it's a DPF light and conditions are safe, 15 to 20 minutes at a steady speed on a dual carriageway may clear it","If the light stays on or the car goes into limp mode, book in"],svc:"diagnostics"}
+ ]},
+ brakes:{label:"Brakes", hint:"Noises, pulling or a soft pedal", q:"What are you noticing when you brake?", opts:[
+  {id:"squeal",label:"Squealing or squeaking",u:"amber",title:"Squealing brakes",
+   sum:"A high-pitched squeal often comes from the wear indicator on the brake pads, which tells you they're getting thin.",
+   causes:["Brake pads near the end of their life","Glazed pads or discs","Dust or debris between the pad and disc"],
+   checks:["Notice whether it happens every time you brake or only first thing","Book in before it turns into grinding"],svc:"repair"},
+  {id:"grind",label:"Grinding or scraping",u:"red",title:"Grinding brakes",
+   sum:"Grinding usually means the pads have worn down to metal, which reduces braking and quickly damages the discs.",
+   causes:["Pads worn through to the backing plate","A stone trapped behind the disc","Seized caliper"],
+   checks:["Don't drive further than you have to. Stopping distances may be much longer","Call us to arrange getting the car in"],svc:"repair"},
+  {id:"soft",label:"Soft or spongy pedal",u:"red",title:"Soft brake pedal",
+   sum:"A soft pedal, or one that sinks towards the floor, can mean air or a leak in the hydraulic system. Braking can fail.",
+   causes:["Brake fluid leak","Air in the brake lines","Master cylinder fault"],
+   checks:["Don't drive the car","Check under the car for fluid near the wheels, then call us"],svc:"repair"},
+  {id:"pull",label:"Car pulls to one side",u:"amber",title:"Pulling under braking",
+   sum:"If the car pulls left or right when you brake, one side is braking harder than the other.",
+   causes:["Sticking caliper","Contaminated or unevenly worn pads","Uneven tyre pressures"],
+   checks:["Check your tyre pressures are equal","Brake gently and leave extra distance until it's checked"],svc:"repair"},
+  {id:"judder",label:"Vibration through the pedal or wheel",u:"amber",title:"Brake judder",
+   sum:"A pulsing pedal or shaking steering wheel when braking usually points to brake discs that have worn unevenly.",
+   causes:["Warped or unevenly worn discs","Worn suspension components","Loose wheel bearing"],
+   checks:["Notice whether it's worse at higher speeds","Book in for a brake check"],svc:"repair"},
+  {id:"handbrake",label:"Handbrake doesn't hold",u:"amber",title:"Weak handbrake",
+   sum:"A handbrake that doesn't hold the car on a slope is a safety risk and an MOT failure.",
+   causes:["Cable needs adjusting or has stretched","Worn rear pads or shoes","Electronic parking brake fault"],
+   checks:["Park in gear (or P) and turn the wheels towards the kerb on hills","Book in for an adjustment"],svc:"repair"}
+ ]},
+ noise:{label:"Strange noise", hint:"Clicks, knocks, whines or rattles", q:"When do you hear the noise?", opts:[
+  {id:"cv",label:"Clicking when turning",u:"amber",title:"Clicking on full lock",
+   sum:"A rhythmic clicking when turning sharply, for example in a car park, often comes from a worn CV joint on a driveshaft.",
+   causes:["Worn CV joint","Split CV boot letting grit in"],checks:["Notice which way you're turning when it's loudest","Book in before the joint fails"],svc:"repair"},
+  {id:"bump",label:"Knocking over bumps",u:"amber",title:"Suspension knock",
+   sum:"Knocks or clunks over speed bumps and potholes usually come from worn suspension parts. London roads are hard on these.",
+   causes:["Worn anti-roll bar drop links or bushes","Broken coil spring","Worn shock absorbers"],
+   checks:["Look for a corner of the car sitting lower than the others","Book in for a suspension check"],svc:"repair"},
+  {id:"whine",label:"Hum or whine that rises with speed",u:"amber",title:"Rising hum or whine",
+   sum:"A hum that gets louder as you go faster, and changes when you turn, is often a wheel bearing.",
+   causes:["Worn wheel bearing","Unevenly worn tyres","Differential or gearbox noise"],
+   checks:["Notice whether it changes when you steer left or right","Book in soon, as bearings get worse over time"],svc:"repair"},
+  {id:"exhaust",label:"Loud roar or blowing from underneath",u:"amber",title:"Exhaust leak",
+   sum:"A louder engine note or a blowing sound usually means a hole or broken joint in the exhaust.",
+   causes:["Corroded or holed exhaust section","Failed joint or gasket","Broken exhaust mounting"],
+   checks:["If you can smell exhaust fumes inside the car, open the windows and don't drive far","Book in for an exhaust check"],svc:"repair"},
+  {id:"belt",label:"Squeal when starting or turning the wheel",u:"green",title:"Squealing drive belt",
+   sum:"A short squeal on cold starts or at full steering lock is often the auxiliary drive belt slipping.",
+   causes:["Worn or glazed drive belt","Belt tensioner wearing"],checks:["If the battery light or heavy steering comes on with it, stop and call us"],svc:"servicing"},
+  {id:"knock",label:"Knocking or rattling from the engine",u:"amber",title:"Engine knocking",
+   sum:"A knock or rattle from the engine needs checking quickly. Some causes are minor, but others can lead to serious engine damage.",
+   causes:["Low oil level","Worn timing chain or tensioner","Loose heat shield (less serious)"],
+   checks:["Check the oil level on the dipstick","Drive gently and as little as possible until it's checked"],
+   note:"If the knock gets louder or the oil light comes on, stop driving and call us.",svc:"diagnostics"}
+ ]},
+ start:{label:"Won't start", hint:"Clicks, cranks or nothing at all", q:"What happens when you turn the key or press start?", opts:[
+  {id:"nothing",label:"Nothing, or the dashboard lights are dim",u:"amber",title:"Flat battery",
+   sum:"No response or dim lights almost always means a flat battery.",
+   causes:["Battery at the end of its life (often 4 to 6 years)","Lights or an accessory left on","Charging fault or something draining the battery"],
+   checks:["Try a jump start if you know how to do it safely","If it starts, drive for at least 30 minutes, then book a battery and charging test"],
+   note:"If the car won't start at all, call us and we'll talk through getting it here.",svc:"diagnostics"},
+  {id:"click",label:"A single click or rapid clicking",u:"amber",title:"Clicking but not starting",
+   sum:"Clicking usually means there isn't enough power to turn the starter motor, or the starter motor itself has a fault.",
+   causes:["Weak battery","Corroded battery terminals","Faulty starter motor"],
+   checks:["Check the battery terminals are tight and clean","Try a jump start"],svc:"diagnostics"},
+  {id:"crank",label:"Turns over but won't fire",u:"amber",title:"Cranks but won't start",
+   sum:"If the engine turns over but won't catch, it's usually a fuel or ignition problem.",
+   causes:["Fuel pump or filter problem","Ignition or immobiliser fault","Faulty crankshaft sensor"],
+   checks:["Check you have fuel. Gauges can be wrong","Don't keep cranking, as it drains the battery","Try your spare key in case it's an immobiliser fault"],svc:"diagnostics"},
+  {id:"stall",label:"Starts, then cuts out",u:"amber",title:"Starts then stalls",
+   sum:"An engine that starts and then dies usually has a fuel, air or sensor problem.",
+   causes:["Faulty idle control or throttle body","Fuel delivery problem","Sensor or immobiliser fault"],
+   checks:["Note whether it happens hot, cold or both","Book a diagnostic check"],svc:"diagnostics"},
+  {id:"slow",label:"Slow to start, especially when cold",u:"green",title:"Slow cranking",
+   sum:"A sluggish start on cold mornings is a common sign that the battery is getting weak.",
+   causes:["Ageing battery","Worn starter motor"],checks:["Get the battery tested before winter so it doesn't leave you stranded"],svc:"diagnostics"}
+ ]},
+ smoke:{label:"Smoke, smells or leaks", hint:"Something you can see or smell", q:"What are you seeing or smelling?", opts:[
+  {id:"bonnet",label:"Smoke or steam from under the bonnet",u:"red",title:"Smoke or steam from the engine bay",
+   sum:"Steam usually means coolant is leaking onto hot parts and the engine may overheat. Smoke can mean oil burning or an electrical fault.",
+   causes:["Coolant leak from a hose or radiator","Oil leaking onto the exhaust","Electrical fault"],
+   checks:["Pull over, switch off and get everyone out","Don't open the bonnet if you see flames. Move away and call 999","Never open the coolant cap while hot"],svc:"diagnostics"},
+  {id:"fuel",label:"Smell of petrol or diesel",u:"red",title:"Fuel smell",
+   sum:"A strong fuel smell can mean a leak, which is a fire risk.",
+   causes:["Leaking fuel line or injector seal","Damaged fuel tank or filler neck","Faulty evaporative system"],
+   checks:["Stop driving and don't smoke near the car","Look for drips under the car","Call us before driving it again"],svc:"repair"},
+  {id:"white",label:"Thick white smoke from the exhaust that doesn't clear",u:"red",title:"Persistent white exhaust smoke",
+   sum:"A little white vapour on cold mornings is normal. Thick, sweet-smelling smoke that doesn't clear can mean coolant is burning in the engine, which may be a head gasket problem.",
+   causes:["Failed head gasket","Cracked cylinder head","Coolant leaking into the engine"],
+   checks:["Check the coolant level when the engine is cold","Avoid driving and call us, as the engine can overheat"],svc:"diagnostics"},
+  {id:"blue",label:"Blue or grey smoke from the exhaust",u:"amber",title:"Blue exhaust smoke",
+   sum:"Blue-grey smoke means the engine is burning oil.",
+   causes:["Worn valve stem seals or piston rings","Turbocharger seal wear","Overfilled engine oil"],
+   checks:["Check the oil level regularly and top up if needed","Book in to find the source"],svc:"diagnostics"},
+  {id:"black",label:"Black smoke from the exhaust",u:"amber",title:"Black exhaust smoke",
+   sum:"Black smoke means the engine is burning too much fuel. It's more common on diesels.",
+   causes:["Blocked air filter","Faulty injector","EGR valve or turbo fault"],
+   checks:["Notice whether fuel economy has dropped","Book a diagnostic check. It may also fail the MOT emissions test"],svc:"diagnostics"},
+  {id:"burn",label:"Burning smell",u:"amber",title:"Burning smell",
+   sum:"A burning smell often comes from a slipping clutch, a sticking brake, or oil dripping onto the exhaust.",
+   causes:["Slipping clutch (smells like burnt paper)","Sticking brake caliper (hot, acrid smell near one wheel)","Oil leak onto the exhaust"],
+   checks:["Make sure the handbrake is fully released","Carefully feel near each wheel for one that's much hotter than the others","If you see smoke, stop and call us"],svc:"repair"},
+  {id:"sweet",label:"Sweet, syrupy smell",u:"amber",title:"Coolant smell",
+   sum:"A sweet smell is usually coolant (antifreeze) leaking. Left alone, the engine can overheat.",
+   causes:["Leaking hose or radiator","Heater matrix leak (often with misted windows)","Water pump seal"],
+   checks:["Check the coolant level when cold","Watch the temperature gauge"],svc:"diagnostics"},
+  {id:"puddle",label:"A puddle under the car",u:"amber",title:"Fluid leak",
+   sum:"The colour gives a clue. Clear water is usually air conditioning condensation and is normal. Green, pink or orange is coolant. Brown or black is oil. Red can be transmission or power steering fluid.",
+   causes:["Coolant, oil or transmission fluid leak","Brake fluid leak (clear to yellow, near a wheel)"],
+   checks:["Put a piece of card under the car overnight to see the colour and position","If it's near a wheel and the brake pedal feels soft, don't drive"],svc:"repair"}
+ ]},
+ aircon:{label:"Air conditioning", hint:"Not cold, smells or noisy", q:"What's wrong with the air conditioning?", opts:[
+  {id:"warm",label:"Not blowing cold",u:"green",title:"Air conditioning not cold",
+   sum:"Air conditioning naturally loses some refrigerant each year. Most systems need a re-gas every two years or so.",
+   causes:["Low refrigerant","Small leak in the system","Compressor or clutch fault"],checks:["Check the A/C button light comes on","Book an air conditioning check and re-gas"],svc:"aircon"},
+  {id:"smell",label:"Musty or damp smell",u:"green",title:"Musty air conditioning smell",
+   sum:"A musty smell usually comes from bacteria and mould building up in the system.",
+   causes:["Bacteria on the evaporator","Blocked or old cabin (pollen) filter"],checks:["Run the fan without A/C for a few minutes before switching off","Book an antibacterial clean and cabin filter change"],svc:"aircon"},
+  {id:"acnoise",label:"Noise when the A/C is on",u:"amber",title:"Air conditioning noise",
+   sum:"A grinding or rattling noise that starts with the A/C usually points to the compressor.",
+   causes:["Worn compressor or clutch bearing","Low refrigerant causing strain"],checks:["Switch the A/C off until it's checked to avoid further damage"],svc:"aircon"},
+  {id:"mist",label:"Windscreen won't demist",u:"amber",title:"Windscreen won't clear",
+   sum:"Being able to see clearly is a legal requirement. Air conditioning dries the air, so if the screen won't clear, the A/C may not be working.",
+   causes:["Air conditioning not working","Blocked cabin filter","Heater matrix leak (often with a sweet smell)"],
+   checks:["Don't drive until you can see clearly","Use the A/C with the heater on the windscreen setting"],svc:"aircon"}
+ ]},
+ tyres:{label:"Tyres and steering", hint:"Vibration, pulling or wear", q:"What's happening with the tyres or steering?", opts:[
+  {id:"vib",label:"Steering wheel vibrates at speed",u:"amber",title:"Vibration at speed",
+   sum:"A vibration that appears at around 50 to 70 mph is usually a wheel out of balance.",
+   causes:["Wheel balance weight lost","Buckled wheel from a pothole","Damaged tyre"],checks:["Look for bulges on the tyre walls","Book a wheel balance"],svc:"tyres"},
+  {id:"pullt",label:"Car pulls to one side",u:"amber",title:"Car pulls to one side",
+   sum:"If the car drifts on a straight, flat road, the wheel alignment or a tyre pressure is usually out.",
+   causes:["Wheel alignment knocked out by a kerb or pothole","Low tyre pressure on one side","Worn steering parts"],checks:["Check all four tyre pressures","Book a tyre and alignment check"],svc:"tyres"},
+  {id:"wear",label:"Worn or unevenly worn tread",u:"amber",title:"Tyre wear",
+   sum:"In the UK, tread must be at least 1.6mm across the central three-quarters of the tyre. Each illegal tyre can mean a fine of up to £2,500 and three penalty points.",
+   causes:["Normal wear","Incorrect pressures (wear on the edges or centre)","Wheel alignment out (wear on one edge)"],
+   checks:["Try the 20p test: if you can see the outer band of the coin in the tread, get it checked","Book in for new tyres"],svc:"tyres"},
+  {id:"bulge",label:"Bulge, cut or cord showing",u:"red",title:"Damaged tyre",
+   sum:"A bulge means the tyre's internal structure is damaged and it could fail suddenly, especially at speed.",
+   causes:["Impact with a pothole or kerb","Driving on an under-inflated tyre"],checks:["Don't drive on it. Fit your spare if you have one and it's safe to do so","Call us for a replacement"],svc:"tyres"},
+  {id:"heavy",label:"Heavy steering",u:"amber",title:"Heavy steering",
+   sum:"Steering that suddenly feels heavy usually means the power steering assistance isn't working.",
+   causes:["Low power steering fluid or a leak","Electric power steering fault","Broken drive belt (often with a battery light)"],checks:["Drive slowly and carefully","If it came on suddenly with a warning light, pull over and call us"],svc:"diagnostics"},
+  {id:"punct",label:"Puncture or slow leak",u:"amber",title:"Puncture",
+   sum:"Many punctures in the main tread area can be repaired safely. Damage near the sidewall usually means a new tyre.",
+   causes:["Nail or screw in the tread","Damaged valve","Leak where the tyre meets the wheel rim"],checks:["Check the pressure daily until it's fixed","Book in for a repair or replacement"],svc:"tyres"}
+ ]},
+ gears:{label:"Gears and clutch", hint:"Slipping, grinding or juddering", q:"What's happening with the gears or clutch?", opts:[
+  {id:"slip",label:"Revs rise but the car doesn't speed up",u:"amber",title:"Slipping clutch",
+   sum:"If the engine revs climb without the car accelerating, especially uphill or in high gears, the clutch is slipping.",
+   causes:["Worn clutch friction plate","Oil contamination on the clutch","Hydraulic fault"],checks:["Avoid heavy loads and hard acceleration","Book in before it stops driving altogether"],svc:"repair"},
+  {id:"select",label:"Hard to get into gear",u:"amber",title:"Difficulty selecting gears",
+   sum:"Gears that are stiff or crunch going in often point to a clutch that isn't fully disengaging.",
+   causes:["Clutch hydraulic fault","Worn gearbox synchromesh","Gear linkage wear"],checks:["Check the clutch pedal feels normal","Book in for a check"],svc:"repair"},
+  {id:"judd",label:"Judder when pulling away",u:"amber",title:"Clutch judder",
+   sum:"A shudder as you release the clutch is often a worn clutch or dual mass flywheel.",
+   causes:["Worn clutch or dual mass flywheel","Worn engine mounts"],checks:["Notice whether it's worse when the engine is cold","Book in for a check"],svc:"repair"},
+  {id:"auto",label:"Automatic gearbox: jerky or slow changes",u:"amber",title:"Automatic gearbox problems",
+   sum:"Harsh, delayed or slipping gear changes in an automatic can have several causes, some simple to fix.",
+   causes:["Low or old transmission fluid","Solenoid or sensor fault","Software or control unit fault"],checks:["Note whether a warning light or limp mode appears","Book a transmission diagnostic check"],svc:"diagnostics"}
+ ]},
+ mot:{label:"MOT and servicing", hint:"Due, overdue or failed", q:"What do you need help with?", opts:[
+  {id:"motdue",label:"My MOT is due",u:"green",title:"MOT due",
+   sum:"You can get an MOT up to a month (minus a day) before it runs out and keep the same renewal date. Driving without a valid MOT can lead to a fine of up to £1,000.",
+   causes:[],checks:["Check your MOT expiry date on the GOV.UK 'Check MOT history' service","Check lights, wipers, screenwash and tyres before the test"],svc:"mot",noCauses:true},
+  {id:"motfail",label:"My car failed its MOT",u:"amber",title:"Failed MOT",
+   sum:"If the failure includes a 'dangerous' defect, the car must not be driven until it's repaired. With 'major' defects, you can only drive it if your previous MOT is still valid and the car is roadworthy.",
+   causes:[],checks:["Have your MOT failure sheet to hand","Send us the list of defects for a quote"],svc:"mot",noCauses:true},
+  {id:"service",label:"My car is due a service",u:"green",title:"Service due",
+   sum:"Regular servicing keeps your car reliable and protects its value. We service to manufacturer schedules so your warranty stays valid.",
+   causes:[],checks:["Check your service book or dashboard for the next service type","Book in at a time that suits you"],svc:"servicing",noCauses:true},
+  {id:"buying",label:"I'm buying a used car",u:"green",title:"Pre-purchase inspection",
+   sum:"An independent inspection before you buy can spot hidden faults and give you room to negotiate.",
+   causes:[],checks:["Check the MOT history online for advisories","Ask the seller for the service history"],svc:"inspection",noCauses:true}
+ ]}
+};
+const CAT_ORDER = ["warning","brakes","noise","start","smoke","tyres","gears","aircon","mot"];
+
+/* Free-text matching */
+const RED_FLAGS = [/\bfire\b/,/flame/,/no brakes?/,/brakes? (failed|gone|not working)/,/pedal (to|goes to) the floor/,/smoke (from|under) (the )?bonnet/,/crash|accident|collision/,/steering (locked|failed)/,/stuck on (the )?motorway/,/hard shoulder/];
+const MATCH = [
+ [/flash.*engine|engine.*flash/,"warning","engineflash"],
+ [/engine (management )?light|check engine|eml/,"warning","engine"],
+ [/oil (light|pressure|warning)/,"warning","oil"],
+ [/battery light|charging/,"warning","battery"],
+ [/overheat|temperature|temp (light|gauge)|running hot/,"warning","temp"],
+ [/abs/,"warning","abs"],
+ [/airbag|srs/,"warning","airbag"],
+ [/dpf|glow ?plug|limp mode/,"warning","dpf"],
+ [/tyre pressure|tpms/,"warning","tpms"],
+ [/brake light|brake warning/,"warning","brake"],
+ [/warning light|dashboard light|light (came|has come) on/,"warning",null],
+ [/grind|scrap/,"brakes","grind"],
+ [/spongy|soft pedal|pedal.*soft/,"brakes","soft"],
+ [/squeal.*brak|brak.*squeal|squeak.*brak|brak.*squeak/,"brakes","squeal"],
+ [/judder.*brak|brak.*(judder|vibrat|shak)|pulsing pedal/,"brakes","judder"],
+ [/handbrake|parking brake/,"brakes","handbrake"],
+ [/pull.*(brak)|brak.*pull/,"brakes","pull"],
+ [/brake|braking/,"brakes",null],
+ [/click.*turn|turn.*click/,"noise","cv"],
+ [/knock.*bump|bump.*(knock|clunk)|clunk|pothole/,"noise","bump"],
+ [/hum|whine|droning/,"noise","whine"],
+ [/exhaust.*(loud|blow|noise|hole)|loud exhaust|blowing/,"noise","exhaust"],
+ [/squeal|screech/,"noise","belt"],
+ [/engine.*(knock|rattl|tick)|knocking|rattl/,"noise","knock"],
+ [/noise|sound/,"noise",null],
+ [/won'?t start|not start|doesn'?t start|wont start|dead|flat battery/,"start",null],
+ [/cranks?|turns over/,"start","crank"],
+ [/cuts? out|stall/,"start","stall"],
+ [/petrol smell|diesel smell|smell(s)? (of )?(petrol|diesel|fuel)/,"smoke","fuel"],
+ [/steam|smoke.*bonnet/,"smoke","bonnet"],
+ [/white smoke/,"smoke","white"],
+ [/blue smoke|grey smoke/,"smoke","blue"],
+ [/black smoke/,"smoke","black"],
+ [/burning|burnt/,"smoke","burn"],
+ [/sweet smell|antifreeze|coolant/,"smoke","sweet"],
+ [/leak|puddle|drip/,"smoke","puddle"],
+ [/smoke|smell/,"smoke",null],
+ [/air ?con|a\/c|\bac\b|not (blowing )?cold/,"aircon",null],
+ [/mist|demist|fogg/,"aircon","mist"],
+ [/bulge|sidewall|cord/,"tyres","bulge"],
+ [/puncture|flat tyre|losing air/,"tyres","punct"],
+ [/steering.*heavy|heavy steering/,"tyres","heavy"],
+ [/vibrat|shak|wobble/,"tyres","vib"],
+ [/pulls? (to|left|right)/,"tyres","pullt"],
+ [/tread|bald/,"tyres","wear"],
+ [/tyre|steering/,"tyres",null],
+ [/clutch.*slip|slipping|revs (rise|go up)/,"gears","slip"],
+ [/automatic|auto box|jerky/,"gears","auto"],
+ [/judder/,"gears","judd"],
+ [/gear|clutch/,"gears",null],
+ [/fail.*mot|mot.*fail/,"mot","motfail"],
+ [/\bmot\b/,"mot","motdue"],
+ [/servic/,"mot","service"],
+ [/buying|used car|inspection/,"mot","buying"]
+];
+
+/* State */
+const S = {cat:null,opt:null,how:null,started:false};
+const log = document.getElementById("log");
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function scroll(){log.scrollTop = log.scrollHeight}
+function add(role, html, wide){
+  const d=document.createElement("div");
+  d.className="msg "+role+(wide?" wide":"");
+  d.innerHTML=html; log.appendChild(d); scroll(); return d;
+}
+function clearChoices(){log.querySelectorAll(".choices,.cats").forEach(n=>n.remove())}
+let busy=false, lastCard=null, pinCard=null;
+function bot(html, after, wide){
+  busy=true;
+  const t=document.createElement("div"); t.className="msg bot typing"; t.setAttribute("aria-label","Assistant is typing");
+  t.innerHTML="<span></span><span></span><span></span>"; log.appendChild(t); scroll();
+  setTimeout(()=>{t.remove(); const el=add("bot",html,wide); if(wide) lastCard=el; if(after) after(); busy=false; if(!pinCard) scroll(); else { log.scrollTop=pinCard.offsetTop-12; pinCard=null; }}, reduce?0:550);
+}
+function choices(list, onPick){
+  const w=document.createElement("div"); w.className="choices";
+  list.forEach(o=>{
+    const b=document.createElement("button"); b.type="button"; b.className="choice"; b.textContent=o.label;
+    b.onclick=()=>{ if(busy) return; clearChoices(); add("user",esc(o.label)); onPick(o); };
+    w.appendChild(b);
+  });
+  log.appendChild(w); scroll();
+  const f=w.querySelector("button"); if(f && S.started) f.focus({preventScroll:true});
+}
+function catGrid(){
+  const w=document.createElement("div"); w.className="cats";
+  CAT_ORDER.forEach(id=>{
+    const c=KB[id];
+    const b=document.createElement("button"); b.type="button"; b.className="cat";
+    b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+ICON[id]+'</svg><span>'+esc(c.label)+'<small>'+esc(c.hint)+'</small></span>';
+    b.onclick=()=>{ if(busy) return; clearChoices(); add("user",esc(c.label)); askCat(id); };
+    w.appendChild(b);
+  });
+  log.appendChild(w); scroll();
+}
+
+function greet(){
+  log.innerHTML=""; Object.assign(S,{cat:null,opt:null,how:null}); renderCase();
+  bot("<p>Hello, I'm the Autocar Repairs assistant. Tell me what your car is doing and I'll give you general guidance on what might be causing it, how urgent it is, and what to do next.</p><p>Type a description below, or choose the area that best fits.</p>", catGrid);
+}
+function askCat(id){
+  S.cat=id; S.opt=null; S.how=null; renderCase();
+  bot("<p>"+esc(KB[id].q)+"</p>", ()=>choices(KB[id].opts.concat([{label:"Something else",id:"_other"}]), o=>{
+    if(o.id==="_other"){ other(); return; }
+    pickOpt(id,o.id);
+  }));
+}
+function other(){
+  bot("<p>No problem. Describe what's happening in your own words below, or give us a call on <a href='"+TEL+"'>"+PHONE+"</a> and one of the team will talk it through with you.</p>", ()=>document.getElementById("text").focus());
+}
+function pickOpt(cat,optId){
+  S.cat=cat; S.opt=KB[cat].opts.find(o=>o.id===optId); renderCase();
+  if(S.opt.u==="red" || cat==="mot"){ result(); return; }
+  bot("<p>Thanks. How is the car behaving overall right now?</p>", ()=>choices([
+    {label:"Driving normally otherwise",v:"normal"},
+    {label:"Getting worse, or feels different to drive",v:"worse"},
+    {label:"It's parked and I'm not driving it",v:"parked"}
+  ], o=>{ S.how=o.v; renderCase(); result(); }));
+}
+function level(){
+  if(!S.opt) return null;
+  return S.opt.u;
+}
+function result(){
+  const o=S.opt, u=URG[o.u], svc=SERVICES[o.svc];
+  let extra="";
+  if(S.how==="worse" && o.u!=="red") extra='<div class="note"><strong>Because it\'s getting worse, don\'t wait.</strong> Call us today on <a href="'+TEL+'">'+PHONE+'</a> so we can advise whether it\'s safe to drive in.</div>';
+  if(S.how==="parked" && o.u!=="red") extra='<div class="note">Good idea to leave it parked until it\'s checked if you\'re unsure. Call us and we can advise on driving it in.</div>';
+  const causes = o.noCauses?"":'<h4>Possible causes</h4><ul>'+o.causes.map(c=>"<li>"+esc(c)+"</li>").join("")+"</ul>";
+  const html =
+   '<div class="urg '+o.u+'"><span class="dot" aria-hidden="true"></span><div><strong>'+esc(u.label)+'</strong><span>'+esc(u.text)+'</span></div></div>'+
+   '<div class="res-body"><h3>'+esc(o.title)+'</h3><p>'+esc(o.sum)+'</p>'+causes+
+   '<h4>What you can do now</h4><ul>'+o.checks.map(c=>"<li>"+esc(c)+"</li>").join("")+"</ul>"+
+   (o.note?'<div class="note">'+esc(o.note)+'</div>':"")+extra+
+   '<h4>How we can help</h4><div class="svc"><div><b>'+esc(svc.name)+'</b><span>'+esc(svc.desc)+'</span></div><a class="btn ghost small" href="'+svc.url+'" target="_blank" rel="noopener">View service</a></div>'+
+   '<div class="actions">'+
+     (o.u==="red"?'<a class="btn" href="'+TEL+'">Call '+PHONE+'</a><button class="btn ghost" type="button" data-book>Request a booking</button>'
+                 :'<button class="btn" type="button" data-book>Request a booking</button><a class="btn ghost" href="'+TEL+'">Call '+PHONE+'</a>')+
+     '<button class="btn ghost" type="button" data-copy>Copy summary</button>'+
+   '</div>'+
+   '<p class="disclaimer">This is general guidance based on what you\'ve told us, not a diagnosis. Cars can show similar symptoms for different reasons, so a technician will need to inspect the vehicle.</p></div>';
+  bot(html, ()=>{
+    pinCard=lastCard;
+    bot("<p>Anything else you'd like to check?</p>", ()=>choices([{label:"Check another problem",v:"again"},{label:"Request a booking",v:"book"}], c=>{
+      if(c.v==="book"){ openBook(); bot("<p>I've opened the booking form with your details filled in.</p>"); }
+      else { bot("<p>Choose an area, or describe the problem below.</p>", catGrid); }
+    }));
+  }, true);
+}
+function safety(){
+  S.cat=null; S.opt={u:"red",title:"Possible emergency",svc:"diagnostics"}; S.how=null; renderCase("Possible emergency");
+  bot('<div class="res-body safety"><h3>Your safety comes first</h3><ol>'+
+    '<li>If you\'re driving, pull over as soon as it\'s safe and switch on your hazard lights.</li>'+
+    '<li>Switch off the engine and get everyone out on the side away from traffic. On a motorway, wait behind the barrier.</li>'+
+    '<li>If there\'s fire, smoke from the engine or anyone is hurt, move well away and call <strong>999</strong>.</li>'+
+    '<li>Call your breakdown provider for recovery.</li></ol>'+
+    '<div class="actions"><a class="btn" href="'+TEL+'">Call us on '+PHONE+'</a></div>'+
+    '<p class="disclaimer">Once everyone is safe, we can talk through what happened and arrange for the car to come to us.</p></div>', null, true);
+}
+function handleText(t){
+  const q=t.toLowerCase();
+  add("user",esc(t)); clearChoices();
+  if(RED_FLAGS.some(r=>r.test(q))){ safety(); return; }
+  for(const [re,cat,opt] of MATCH){
+    if(re.test(q)){
+      if(opt){
+        const o=KB[cat].opts.find(x=>x.id===opt);
+        bot("<p>It sounds like this could be about <strong>"+esc(o.title.toLowerCase())+"</strong>. Is that right?</p>", ()=>choices([
+          {label:"Yes, that's it",v:"y"},{label:"No, let me choose",v:"n"}
+        ], c=>{ if(c.v==="y") pickOpt(cat,opt); else askCat(cat); }));
+      } else { askCat(cat); }
+      return;
+    }
+  }
+  bot("<p>I couldn't match that to a common problem. Choose the area that fits best, or call us on <a href='"+TEL+"'>"+PHONE+"</a> to describe it to one of the team.</p>", catGrid);
+}
+
+/* Summary panel */
+function renderCase(override){
+  const b=document.getElementById("caseBody");
+  if(!S.cat && !S.opt){ b.innerHTML='<p class="empty">Your answers will appear here so you can share them with us when you book or call.</p>'; return; }
+  const howTxt={normal:"Driving normally otherwise",worse:"Getting worse",parked:"Parked, not driving"};
+  let h="<dl>";
+  if(S.cat) h+="<dt>Area</dt><dd>"+esc(KB[S.cat].label)+"</dd>";
+  if(S.opt) h+="<dt>Issue</dt><dd>"+esc(override||S.opt.title)+"</dd>";
+  if(S.how) h+="<dt>Condition</dt><dd>"+esc(howTxt[S.how])+"</dd>";
+  if(S.opt) h+='<dt>Urgency</dt><dd><span class="pill '+S.opt.u+'">'+esc(URG[S.opt.u].label)+"</span></dd>";
+  h+="</dl>"; b.innerHTML=h;
+}
+function summaryText(){
+  if(!S.opt) return "";
+  const howTxt={normal:"Otherwise driving normally.",worse:"It's getting worse.",parked:"The car is parked and not being driven."};
+  return [ (S.cat?KB[S.cat].label+": ":"")+S.opt.title+".", S.how?howTxt[S.how]:"", "Assistant guidance: "+URG[S.opt.u].label+"."].filter(Boolean).join(" ");
+}
+
+/* Booking */
+const dlg=document.getElementById("book");
+function openBook(){
+  const body=document.getElementById("bookBody");
+  if(!document.getElementById("bookForm")){ body.innerHTML=formHTML; bindForm(); }
+  if(S.opt && SERVICES[S.opt.svc]) document.getElementById("service").value=SERVICES[S.opt.svc].book;
+  const n=document.getElementById("notes"); if(S.opt) n.value=summaryText();
+  if(typeof dlg.showModal==="function") dlg.showModal(); else dlg.setAttribute("open","");
+  setTimeout(()=>document.getElementById("reg").focus(),50);
+}
+const formHTML=document.getElementById("bookBody").innerHTML;
+function closeBook(){ dlg.close ? dlg.close() : dlg.removeAttribute("open"); }
+document.getElementById("closeBook").onclick=closeBook;
+dlg.addEventListener("click",e=>{ if(e.target===dlg) closeBook(); });
+
+function bindForm(){
+  const d=document.getElementById("date");
+  const tm=new Date(); tm.setDate(tm.getDate()+1); d.min=tm.toISOString().slice(0,10);
+  const reg=document.getElementById("reg");
+  reg.addEventListener("input",()=>{ reg.value=reg.value.toUpperCase().replace(/[^A-Z0-9 ]/g,""); });
+  document.getElementById("bookForm").addEventListener("submit",e=>{
+    e.preventDefault();
+    let ok=true;
+    const set=(id,bad)=>{document.getElementById(id).classList.toggle("invalid",bad); if(bad) ok=false;};
+    const r=reg.value.replace(/\s/g,"");
+    set("f-reg", !/^[A-Z0-9]{2,7}$/.test(r));
+    set("f-name", document.getElementById("name").value.trim().length<2);
+    set("f-phone", !/^(\+44|0)\d{9,10}$/.test(document.getElementById("phone").value.replace(/[\s()-]/g,"")));
+    const dv=d.value; let bad=!dv;
+    if(dv){ const dt=new Date(dv+"T12:00:00"); bad = dt.getDay()===0 || dv<d.min; }
+    set("f-date", bad);
+    if(!ok){ const f=document.querySelector("#bookForm .invalid input,#bookForm .invalid select"); if(f) f.focus(); return; }
+    const ref="AC-"+Math.floor(1000+Math.random()*9000);
+    const dt=new Date(dv+"T12:00:00");
+    const nice=dt.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"});
+    const sat=dt.getDay()===6?" We're open 9am to 1pm on Saturdays.":"";
+    document.getElementById("bookBody").innerHTML='<div class="done"><div class="tick" aria-hidden="true">&#10003;</div><h3>Booking request sent</h3>'+
+      '<p>Thanks, '+esc(document.getElementById("name").value.trim().split(" ")[0])+'. We\'ll call you to confirm a time for <strong>'+esc(document.getElementById("service").value.toLowerCase())+'</strong> on '+esc(nice)+'.'+sat+'</p>'+
+      '<p>Your reference is <strong>'+ref+'</strong>. Vehicle: <strong>'+esc(reg.value.trim())+'</strong>.</p>'+
+      '<p class="disclaimer">Proof of concept: in the live version this request would be emailed to enquiries@autocar-repairs.co.uk.</p>'+
+      '<button class="btn" type="button" id="doneBtn">Done</button></div>';
+    document.getElementById("doneBtn").onclick=closeBook;
+    document.getElementById("doneBtn").focus();
+  });
+}
+bindForm();
+
+/* Global clicks */
+document.addEventListener("click",e=>{
+  if(e.target.closest("[data-book]")){ e.preventDefault(); openBook(); }
+  if(e.target.closest("[data-copy]")){
+    const t=summaryText()+" Autocar Repairs, "+PHONE+".";
+    const done=()=>toast("Summary copied");
+    if(navigator.clipboard) navigator.clipboard.writeText(t).then(done,()=>fallbackCopy(t));
+    else fallbackCopy(t);
+  }
+});
+function fallbackCopy(t){const a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{document.execCommand("copy");toast("Summary copied")}catch(e){toast("Couldn't copy. Select the text manually.")}a.remove();}
+let tt; function toast(m){const el=document.getElementById("toast");el.textContent=m;el.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>el.classList.remove("show"),2200);}
+
+document.getElementById("composer").addEventListener("submit",e=>{
+  e.preventDefault(); if(busy) return;
+  const i=document.getElementById("text"); const v=i.value.trim(); if(!v) return;
+  S.started=true; i.value=""; handleText(v);
+});
+log.addEventListener("click",()=>{S.started=true});
+document.getElementById("restart").onclick=()=>{ if(!busy){ document.getElementById("notes") && (document.getElementById("notes").value=""); greet(); } };
+
+/* Opening hours (UK time) */
+function openStatus(){
+  const parts=new Intl.DateTimeFormat("en-GB",{timeZone:"Europe/London",weekday:"short",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(new Date());
+  const g=k=>parts.find(p=>p.type===k).value;
+  const day=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].indexOf(g("weekday"));
+  const mins=parseInt(g("hour"),10)%24*60+parseInt(g("minute"),10);
+  let open=false, msg;
+  if(day>=1&&day<=5){ open=mins>=510&&mins<1110; msg=open?"Open now, until 6:30pm":(mins<510?"Closed, opens 8:30am today":(day===5?"Closed, opens 9am Saturday":"Closed, opens 8:30am tomorrow")); }
+  else if(day===6){ open=mins>=540&&mins<780; msg=open?"Open now, until 1pm":(mins<540?"Closed, opens 9am today":"Closed, opens 8:30am Monday"); }
+  else { msg="Closed today, opens 8:30am Monday"; }
+  document.getElementById("status").classList.toggle("open",open);
+  document.getElementById("statusText").textContent=msg;
+  document.querySelectorAll("#hours tr").forEach(r=>r.classList.toggle("today", r.dataset.d.split(",").includes(String(day))));
+}
+openStatus(); setInterval(openStatus,60000);
+document.getElementById("yr").textContent=new Date().getFullYear();
+
+greet();
+})();
+</script>
+</body>
+</html>
